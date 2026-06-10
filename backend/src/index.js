@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const { sequelize } = require('./models');
 const authRoutes = require('./routes/authRoutes');
 const linkRoutes = require('./routes/linkRoutes');
@@ -13,6 +14,7 @@ const PORT = process.env.PORT || 5000;
 
 const allowedOrigins = [
   'http://localhost:5173',
+  'https://linktree-clone-new.onrender.com',
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
@@ -22,6 +24,7 @@ app.use(
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
+        console.log(`CORS blocked: ${origin}`);
         callback(new Error('Not allowed by CORS'));
       }
     },
@@ -40,15 +43,21 @@ app.use('/api/links', linkRoutes);
 app.use('/api/public', publicRoutes);
 app.use('/api/user', userRoutes);
 
-// ✅ Отдача статического React-приложения (после API-маршрутов)
-// Путь к собранному фронтенду (папка dist в frontend)
+// Отдача статического React-приложения
 const frontendDistPath = path.join(__dirname, '../../frontend/dist');
-app.use(express.static(frontendDistPath));
+console.log(`Looking for frontend at: ${frontendDistPath}`);
 
-// ✅ Обработка всех остальных GET-запросов (для React Router)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(frontendDistPath, 'index.html'));
-});
+if (fs.existsSync(frontendDistPath)) {
+  app.use(express.static(frontendDistPath));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(frontendDistPath, 'index.html'));
+  });
+} else {
+  console.error(`❌ Frontend dist not found! Build may have failed.`);
+  app.get('*', (req, res) => {
+    res.status(404).json({ error: 'Frontend not built. Please check build logs.' });
+  });
+}
 
 async function start() {
   try {
