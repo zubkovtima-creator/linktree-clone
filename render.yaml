@@ -4,8 +4,8 @@ services:
     runtime: node
     repo: https://github.com/zubkovtima-creator/linktree-clone
     plan: free
-    buildCommand: npm run build
-    startCommand: npm run start
+    buildCommand: cd frontend && npm install && npm run build
+    startCommand: cd backend && npm start
     envVars:
       - key: NODE_VERSION
         value: 18.17.0
