@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const { sequelize } = require('./models');
 const authRoutes = require('./routes/authRoutes');
 const linkRoutes = require('./routes/linkRoutes');
@@ -33,10 +34,21 @@ app.get('/ping', (req, res) => {
   res.json({ message: 'pong' });
 });
 
+// API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/links', linkRoutes);
 app.use('/api/public', publicRoutes);
 app.use('/api/user', userRoutes);
+
+// ✅ Отдача статического React-приложения (после API-маршрутов)
+// Путь к собранному фронтенду (папка dist в frontend)
+const frontendDistPath = path.join(__dirname, '../../frontend/dist');
+app.use(express.static(frontendDistPath));
+
+// ✅ Обработка всех остальных GET-запросов (для React Router)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendDistPath, 'index.html'));
+});
 
 async function start() {
   try {
