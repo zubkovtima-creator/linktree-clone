@@ -1,17 +1,13 @@
 services:
   - type: web
-    name: linktree-api
+    name: linktree-clone
     runtime: node
-    rootDir: backend
-    buildCommand: npm install
-    startCommand: npm start
-    healthCheckPath: /ping
+    repo: https://github.com/zubkovtima-creator/linktree-clone
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm run start
     envVars:
-      - key: NODE_ENV
-        value: production
-      - key: JWT_SECRET
-        generateValue: true
-      - key: DATABASE_URL
-        sync: false
+      - key: NODE_VERSION
+        value: 18.17.0
       - key: FRONTEND_URL
-        sync: false
+        value: https://linktree-clone-g7ta.onrender.com
