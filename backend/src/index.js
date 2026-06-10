@@ -37,11 +37,17 @@ app.get('/ping', (req, res) => {
   res.json({ message: 'pong' });
 });
 
-// API routes
+// API routes с /api
 app.use('/api/auth', authRoutes);
 app.use('/api/links', linkRoutes);
 app.use('/api/public', publicRoutes);
 app.use('/api/user', userRoutes);
+
+// 🔧 Также принимаем запросы без /api (для фронтенда)
+app.use('/auth', authRoutes);
+app.use('/links', linkRoutes);
+app.use('/public', publicRoutes);
+app.use('/user', userRoutes);
 
 // Отдача статического React-приложения
 const frontendDistPath = path.join(__dirname, '../../frontend/dist');
