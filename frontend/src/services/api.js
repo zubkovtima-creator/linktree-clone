@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: '/api',
 });
 
 let onUnauthorized = null;
@@ -51,7 +51,7 @@ export function getErrorMessage(error, fallback = 'Произошла ошибк
 }
 
 export async function register(email, username, password) {
-  const { data } = await api.post('/auth/register', { email, username, password });
+  const { data } = await api.post('/api/auth/register', { email, username, password });
   return data;
 }
 
